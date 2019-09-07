@@ -1,0 +1,36 @@
+{
+  "name": "auth",
+  "version": "1.0.0",
+  "description": "authentication app",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "author": "Sufyan",
+  "license": "MIT",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "body-parser": "~1.15.2",
+    "cancan": "^3.1.0",
+    "config": "^3.2.2",
+    "connect-flash": "^0.1.1",
+    "cookie-parser": "~1.4.3",
+    "ejs": "^2.7.1",
+    "express": "^4.17.1",
+    "express-ejs-layouts": "^2.5.0",
+    "express-session": "^1.14.2",
+    "express-validator": "^6.2.0",
+    "mongoose": "^5.6.13",
+    "passport": "^0.3.2",
+    "passport-facebook": "^3.0.0",
+    "passport-google-oauth": "~1.0.0",
+    "passport-local": "^1.0.0",
+    "passport-twitter": "~1.0.4",
+    "request": "^2.88.0"
+  },
+  "devDependencies": {
+    "concurrently": "^4.1.2",
+    "nodemon": "^1.19.2"
+  }
+}
