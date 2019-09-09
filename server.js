@@ -4,7 +4,8 @@ const mongoose = require('mongoose');
 const flash = require('connect-flash');
 const session = require('express-session');
 const passport = require('passport');
-
+const auth = require('./middleware/auth');
+const bodyParser = require('body-parser');
 const app = express();
 
 //passport config
@@ -27,8 +28,6 @@ app.set('view engine', 'ejs');
 //application level middlewares
 app.use(require('morgan')('combined'));
 app.use(require('cookie-parser')());
-//Bodyparser
-app.use(express.urlencoded({ extended: false }));
 //Express Session
 app.use(
   session({
@@ -37,7 +36,9 @@ app.use(
     saveUninitialized: true
   })
 );
-
+//Bodyparser
+app.use(express.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: false }));
 //Passport middleware
 app.use(passport.initialize());
 app.use(passport.session());
