@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const flash = require('connect-flash');
 const session = require('express-session');
 const passport = require('passport');
+
 const app = express();
 
 //passport config
@@ -23,9 +24,11 @@ mongoose
 app.use(expressLayouts);
 app.set('view engine', 'ejs');
 
+//application level middlewares
+app.use(require('morgan')('combined'));
+app.use(require('cookie-parser')());
 //Bodyparser
 app.use(express.urlencoded({ extended: false }));
-
 //Express Session
 app.use(
   session({
@@ -54,6 +57,22 @@ app.use((req, res, next) => {
 app.use('/', require('./routes/index'));
 app.use('/users', require('./routes/users'));
 
+app.get(
+  '/login/facebook',
+  passport.authenticate('facebook', { scope: ['email'] })
+);
+
+app.get(
+  '/return',
+  passport.authenticate('facebook', {
+    successRedirect: '/profile',
+    failureRedirect: '/'
+  })
+);
+
+app.get('/profile', function(req, res) {
+  res.render('profile', { user: req.user });
+});
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => console.log(`Server started on ${PORT}`));
