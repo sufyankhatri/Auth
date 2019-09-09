@@ -1,12 +1,15 @@
 const LocalStrategy = require('passport-local').Strategy;
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
-const Strategy = require('passport-facebook').Strategy;
+const FacebookStrategy = require('passport-facebook').Strategy;
+GoogleStrategy = require('passport-google-oauth20').Strategy;
+
 //User model
 const User = require('../models/User');
-const FACEBOOK_CLIENT_ID = require('./facebookAppCredentials').facebookClientId;
-const FACEBOOK_CLIENT_SECRET = require('./facebookAppCredentials')
-  .facebookClientSecret;
+const FACEBOOK_CLIENT_ID = require('./AppCredentials').facebookClientId;
+const FACEBOOK_CLIENT_SECRET = require('./AppCredentials').facebookClientSecret;
+const GOOGLE_CLIENT_ID = require('./AppCredentials').googleClientId;
+const GOOGLE_CLIENT_SECRET = require('./AppCredentials').googleClientSecret;
 module.exports = function(passport) {
   passport.use(
     new LocalStrategy({ usernameField: 'email' }, (email, password, done) => {
@@ -34,7 +37,7 @@ module.exports = function(passport) {
   );
 
   passport.use(
-    new Strategy(
+    new FacebookStrategy(
       {
         clientID: FACEBOOK_CLIENT_ID,
         clientSecret: FACEBOOK_CLIENT_SECRET,
@@ -42,7 +45,7 @@ module.exports = function(passport) {
         profileFields: ['emails', 'name']
       },
       function(accessToken, refreshToken, profile, done) {
-        User.findOne({ 'facebook.id': profile.id }, (err, user) => {
+        User.findOne({ id: profile.id }, (err, user) => {
           if (err) {
             return done(err);
           }
@@ -61,6 +64,38 @@ module.exports = function(passport) {
           //   profile.name.givenName + ' ' + profile.name.familyName;
           // newUser.facebook.email = profile.emails[0].value;
 
+          newUser.save(function(err) {
+            if (err) throw err;
+            return done(null, newUser);
+          });
+        });
+      }
+    )
+  );
+  passport.use(
+    new GoogleStrategy(
+      {
+        clientID: GOOGLE_CLIENT_ID,
+        clientSecret: GOOGLE_CLIENT_SECRET,
+        callbackURL: 'http://localhost:5000/returnG',
+        profileFields: ['emails', 'name']
+      },
+      function(accessToken, refreshToken, profile, done) {
+        console.log(profile, ' ', accessToken);
+        User.findOne({ id: profile.id }, (err, user) => {
+          if (err) {
+            return done(err);
+          }
+          if (user) {
+            return done(null, user);
+          }
+          console.log(profile);
+          var newUser = new User({
+            id: profile.id,
+            token: accessToken,
+            name: profile.name.givenName,
+            email: profile.emails[0].value
+          });
           newUser.save(function(err) {
             if (err) throw err;
             return done(null, newUser);

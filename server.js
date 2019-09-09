@@ -63,8 +63,20 @@ app.get(
 );
 
 app.get(
+  '/login/google',
+  passport.authenticate('google', { scope: ['profile', 'email'] })
+);
+
+app.get(
   '/return',
   passport.authenticate('facebook', {
+    successRedirect: '/profile',
+    failureRedirect: '/'
+  })
+);
+app.get(
+  '/returnG',
+  passport.authenticate('google', {
     successRedirect: '/profile',
     failureRedirect: '/'
   })
